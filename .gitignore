@@ -3,3 +3,5 @@ data/*.json
 !data/.gitkeep
 node_modules/
 *.log
+.playwright-cli/
+output/
