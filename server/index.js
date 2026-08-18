@@ -7,7 +7,7 @@ const { complete } = require('./provider');
 
 function loadEnv() { try { for (const line of fs.readFileSync(path.join(__dirname,'..','.env'),'utf8').split(/\r?\n/)) { const m=line.match(/^([^#=]+)=(.*)$/); if(m&&!process.env[m[1].trim()]) process.env[m[1].trim()]=m[2].trim(); } } catch {} }
 loadEnv();
-const port = Number(process.env.PORT || 3000), limit = Number(process.env.DAILY_CODE_LIMIT || 10), maxTurns = Number(process.env.MAX_TURNS_PER_SESSION || 66), ttl = Number(process.env.SESSION_TTL_HOURS || 24);
+const port = Number(process.env.PORT || 3000), limit = Number(process.env.DAILY_CODE_LIMIT || 10), maxTurns = Number(process.env.MAX_TURNS_PER_SESSION || 66), ttl = Number(process.env.SESSION_TTL_HOURS || 87600);
 const publicDir = path.join(__dirname, '..', 'public');
 const json = (res,status,data) => { res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}); res.end(JSON.stringify(data)); };
 const body = req => new Promise((resolve,reject)=>{ let s=''; req.on('data',c=>{s+=c;if(s.length>50000)req.destroy();}); req.on('end',()=>{try{resolve(JSON.parse(s||'{}'))}catch(e){reject(e)}}); });
