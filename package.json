@@ -1,0 +1,11 @@
+{
+  "name": "bigfive-open-interview",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node --watch server/index.js",
+    "start": "node server/index.js",
+    "secrets": "node scripts/generate-secrets.js"
+  },
+  "engines": { "node": ">=20" }
+}
