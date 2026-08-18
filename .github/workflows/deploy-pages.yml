@@ -26,7 +26,9 @@ jobs:
         run: |
           mkdir -p dist
           cp -R public/. dist/
-          printf "window.__APP_CONFIG__ = { API_BASE_URL: '%s' };\n" "${{ vars.API_BASE_URL }}" > dist/runtime-config.js
+          if [ -n "${{ vars.API_BASE_URL }}" ]; then
+            printf "window.__APP_CONFIG__ = { API_BASE_URL: '%s' };\n" "${{ vars.API_BASE_URL }}" > dist/runtime-config.js
+          fi
           touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
