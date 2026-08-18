@@ -40,20 +40,22 @@ async function complete(messages, turns) {
 }
 
 const clamp = value => Math.max(0, Math.min(100, Math.round(Number(value) || 50)));
+const normalizeScale = value => { const number = Number(value); return clamp(number > 0 && number <= 1 ? number * 100 : number); };
 function normalizeResult(result) {
   if (!result || result.type !== 'report' || !result.report) return result;
   const report = result.report;
   const allFacets = [];
   for (const dimension of report.dimensions || []) {
-    dimension.score = clamp(dimension.score);
+    dimension.score = normalizeScale(dimension.score);
+    dimension.confidence = normalizeScale(dimension.confidence);
     (dimension.facets || []).forEach((facet, index) => {
-      facet.score = clamp(facet.score ?? dimension.score + [3, 0, -3][index]);
+      facet.score = normalizeScale(facet.score ?? dimension.score + [3, 0, -3][index]);
       facet.range ||= `${Math.max(0, facet.score - 5)}–${Math.min(100, facet.score + 5)}`;
       allFacets.push({...facet, dimensionKey: dimension.key, portrait: facet.portrait || facet.explanation});
     });
   }
   report.facetRanking = (report.facetRanking?.length === 15 ? report.facetRanking : allFacets)
-    .map(facet => ({...facet, score: clamp(facet.score)}))
+    .map(facet => ({...facet, score: normalizeScale(facet.score)}))
     .sort((a, b) => b.score - a.score)
     .map((facet, index) => ({...facet, rank: index + 1}));
   if (!report.growthPlan?.length) report.growthPlan = (report.blindSpots || []).map(item => ({
@@ -68,7 +70,18 @@ function normalizeResult(result) {
     if (report.growthPlan.length >= 3) break;
     report.growthPlan.push({title:`调节${dimension.name}的使用方式`,why:dimension.watchout,microAction:`下次出现相关情境时，先记录触发条件，再选择一个比平时幅度小 10% 的新行动。`,ifThen:`如果注意到“${dimension.watchout}”，那么先停一分钟，确认此刻需要的是坚持还是切换策略。`,weeklyReview:'每周回看一次触发情境、实际选择与结果，不用感受好坏代替行为证据。',guardrail:`保留“${dimension.strengthExpression}”这项功能，只调整它被过度使用的时机。`});
   }
-  if (report.confidence) delete report.confidence.gaps;
+  if (!report.learningAndWorkStyle) {
+    const strongest = [...(report.dimensions || [])].sort((a,b) => b.score - a.score)[0];
+    report.learningAndWorkStyle = {
+      bestConditions:['目标和完成标准清楚，同时保留自主安排方法的空间','能在专注时段与低干扰环境中推进重要任务'],
+      taskApproach:'先理解意义与约束，再拆出可验证的小步骤；路线无效时调整方法，而不是机械坚持。',
+      collaboration:'适合责任边界清晰、能够直接反馈又尊重独立判断的协作。',
+      frictionPoints:[strongest?.watchout || '目标模糊或反馈长期缺席时，容易增加无效消耗'],
+      experiments:['选一个本周任务，预先写下完成标准、首个十五分钟动作和一次复盘时间。'],
+      boundary:'这些建议只描述可能更适配的环境，不决定专业、职业、智力或能力上限。'
+    };
+  }
+  if (report.confidence) { report.confidence.score = normalizeScale(report.confidence.score); delete report.confidence.gaps; }
   return result;
 }
-module.exports = { complete };
+module.exports = { complete, normalizeResult };

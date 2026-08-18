@@ -6,7 +6,8 @@ const file = path.join(__dirname, '..', 'data', 'store.json');
 const empty = () => ({ days: {}, sessions: {}, access: {} });
 function load() { try { return { ...empty(), ...JSON.parse(fs.readFileSync(file, 'utf8')) }; } catch { return empty(); } }
 function save(db) { const tmp = `${file}.tmp`; fs.writeFileSync(tmp, JSON.stringify(db, null, 2)); fs.renameSync(tmp, file); }
-const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Singapore' }).format(new Date());
+const resetTimeZone = () => process.env.DAILY_RESET_TIMEZONE || 'Asia/Shanghai';
+const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: resetTimeZone() }).format(new Date());
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const randomCode = () => Array.from(crypto.randomBytes(10), b => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('').match(/.{1,5}/g).join('-');
 
@@ -20,7 +21,7 @@ function claimDailySlot(dailyLimit, ttlHours) {
   db.days[day] ||= { participants: [] };
   // 兼容旧数据，但只按新制 participant 计数。
   db.days[day].participants ||= [];
-  if (db.days[day].participants.length >= dailyLimit) throw new Error('今天的 10 个访谈名额已经领完，请明天再来。');
+  if (db.days[day].participants.length >= dailyLimit) throw new Error(`今天的 ${dailyLimit} 个访谈名额已经领完，北京时间零点恢复。`);
   let code; do { code = randomCode(); } while (db.access[hash(code)]);
   const sessionId = createSession(db, ttlHours);
   db.access[hash(code)] = { sessionId, createdAt: Date.now() };
@@ -37,5 +38,5 @@ function loginWithCode(code, ttlHours) {
 }
 function getSession(id) { const db = load(), s = db.sessions[id]; return s && s.expiresAt > Date.now() ? s : null; }
 function updateSession(id, fn) { const db = load(); if (!db.sessions[id]) return null; fn(db.sessions[id]); save(db); return db.sessions[id]; }
-function availability(dailyLimit) { const db = load(), used = db.days[today()]?.participants?.length || 0; return { used, remaining: Math.max(0, dailyLimit - used), limit: dailyLimit }; }
+function availability(dailyLimit) { const db = load(), day = today(), used = db.days[day]?.participants?.length || 0; return { day, used, remaining: Math.max(0, dailyLimit - used), limit: dailyLimit, resetTimeZone: resetTimeZone(), resetHour: 0 }; }
 module.exports = { claimDailySlot, loginWithCode, getSession, updateSession, availability };
