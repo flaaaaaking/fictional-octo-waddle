@@ -1,0 +1,8 @@
+# Replace the angle-bracket placeholders only on your server. Do not commit the real credentials file.
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  - hostname: api.<YOUR_DOMAIN>
+    service: http://127.0.0.1:8787
+  - service: http_status:404

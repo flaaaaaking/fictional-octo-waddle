@@ -1,10 +1,11 @@
 const $=s=>document.querySelector(s), names={extraversion:'外向性',conscientiousness:'盡責性',openness:'開放性',agreeableness:'宜人性',emotionalSensitivity:'情緒敏感性'}; let turn=0;
+const API_BASE_URL=String(window.__APP_CONFIG__?.API_BASE_URL||'').replace(/\/$/,'');
 const guideNames={extraversion:['連結推動者','主動、活力與社交能量'],conscientiousness:['秩序建設者','計畫、責任與持續行動'],openness:['世界探索者','好奇、審美與認知彈性'],agreeableness:['關係協調者','共情、合作與邊界'],emotionalSensitivity:['內在感知者','警覺、感受與恢復能力']};
 const colorMap={extraversion:'#E99A45',conscientiousness:'#3B6FCB',openness:'#7667E8',agreeableness:'#45A58A',emotionalSensitivity:'#D96C7D'}, posMap={openness:'0%',conscientiousness:'25%',extraversion:'50%',agreeableness:'75%',emotionalSensitivity:'100%'};
 document.head.insertAdjacentHTML('beforeend','<style>.persona{grid-template-columns:1fr 300px}.top-character{background-size:auto 100%}@media(max-width:760px){.persona{grid-template-columns:1fr}}</style>');
-document.head.insertAdjacentHTML('beforeend','<style>img[src="/bigfive-guides-v2.png"]{content:url("/bigfive-guides-v2.jpg")}.top-character{background-image:url("/bigfive-guides-v2.jpg")!important}</style>');
+document.head.insertAdjacentHTML('beforeend','<style>img[src="./bigfive-guides-v2.png"]{content:url("./bigfive-guides-v2.jpg")}.top-character{background-image:url("./bigfive-guides-v2.jpg")!important}</style>');
 const toast=m=>{const x=$('#toast');x.textContent=m;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2500)};
-async function api(url,options={}){const r=await fetch(url,{...options,headers:{'content-type':'application/json',...(options.headers||{})}}),d=await r.json();if(!r.ok)throw new Error(d.error||'請求失敗');return d}
+async function api(url,options={}){const r=await fetch(`${API_BASE_URL}${url}`,{...options,credentials:'include',headers:{'content-type':'application/json',...(options.headers||{})}}),d=await r.json();if(!r.ok)throw new Error(d.error||'請求失敗');return d}
 function show(id){['gate','codeReveal','interview','report'].forEach(x=>$(`#${x}`).classList.toggle('hidden',x!==id));document.querySelector('.group-intro').classList.toggle('hidden',id!=='gate')}
 async function refreshSlots(){try{const a=await api('/api/access/availability');$('#slots').textContent=`今日剩餘 ${a.remaining} / ${a.limit} 個名額`;$('#claim').disabled=a.remaining===0}catch{$('#slots').textContent='名額讀取失敗'}}
 function dims(v={}){$('#dims').innerHTML=Object.entries(names).map(([k,n])=>`<div class="dim"><label><span>${n}</span><span>${v[k]||0}%</span></label><div class="bar"><i style="width:${v[k]||0}%;background:${colorMap[k]}"></i></div></div>`).join('')}

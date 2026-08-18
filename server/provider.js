@@ -12,7 +12,7 @@ async function complete(messages, turns) {
   if ((process.env.AI_PROVIDER || 'mock') === 'mock') return mock(messages, turns);
   const base = process.env.DEEPSEEK_API_BASE_URL?.replace(/\/$/, '');
   if (!base || !process.env.DEEPSEEK_API_KEY || !process.env.DEEPSEEK_MODEL) throw new Error('DeepSeek 配置不完整');
-  const response = await fetch(`${base}/chat/completions`, { method:'POST', headers:{'content-type':'application/json','authorization':`Bearer ${process.env.DEEPSEEK_API_KEY}`}, body:JSON.stringify({model:process.env.DEEPSEEK_MODEL,temperature:0.45,response_format:{type:'json_object'},messages:[{role:'system',content:SYSTEM_PROMPT+'\n最终报告必须包含 persona.title、persona.tagline、persona.introduction。每个 dimensions 项必须包含 score（0-100倾向指数）与 introduction，并保证五维都出现。'},...messages]}) });
+  const response = await fetch(`${base}/chat/completions`, { signal: AbortSignal.timeout(Number(process.env.AI_TIMEOUT_MS || 20000)), method:'POST', headers:{'content-type':'application/json','authorization':`Bearer ${process.env.DEEPSEEK_API_KEY}`}, body:JSON.stringify({model:process.env.DEEPSEEK_MODEL,temperature:0.45,max_tokens:Number(process.env.AI_MAX_TOKENS || 1400),response_format:{type:'json_object'},messages:[{role:'system',content:SYSTEM_PROMPT+'\n最终报告必须包含 persona.title、persona.tagline、persona.introduction。每个 dimensions 项必须包含 score（0-100倾向指数）与 introduction，并保证五维都出现。'},...messages]}) });
   if (!response.ok) throw new Error(`模型接口返回 ${response.status}`);
   const data = await response.json(); return JSON.parse(data.choices[0].message.content);
 }

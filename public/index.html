@@ -1,8 +1,25 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>五大人格反饋計畫</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body>
-<main class="shell"><header><div class="brand"><span class="mark" aria-label="五大人格反饋計畫標誌">五</span><div><b>五大人格反饋計畫</b><small>BIG FIVE FEEDBACK PROJECT</small></div></div><span id="slots" class="slot-pill">讀取今日名額…</span></header>
-<section id="gate" class="card hero"><span class="eyebrow">BIG FIVE FEEDBACK PROJECT</span><h1>從一次認真對話開始，<br>慢慢看清自己的穩定傾向。</h1><p>這裡沒有標準答案。你可以說說自己會怎麼做、為什麼，以及什麼情況下會改變。每天開放 10 個新訪談名額。</p><div class="claim-row"><button id="claim">領取今日名額</button><span>無需註冊 · 專屬訪問碼可長期查看結果</span></div><details><summary>已經有訪問碼？</summary><div class="code-row"><input id="code" placeholder="輸入你的訪問碼" autocomplete="off"><button id="login">繼續訪談或查看報告</button></div></details><p class="fine">本計畫基於 Big Five 理論開展半結構化訪談，不是標準化心理量表或臨床診斷。</p></section>
-<section class="group-intro"><div><span class="eyebrow">五個維度，一個完整的人</span><h2>認識陪你完成訪談的五位角色</h2><p>他們分別代表開放性、盡責性、外向性、宜人性與情緒敏感性。每一種傾向都有它的能力，也有需要留意的邊界。</p></div><img src="/bigfive-guides-v2.png" alt="五大人格角色合照"></section>
-<section id="codeReveal" class="hidden card code-reveal"><span class="eyebrow">這是你的專屬訪問碼</span><h2 id="issuedCode"></h2><p>請現在保存。以後換設備、清理瀏覽器或回來查看報告時，都使用這個碼。</p><button id="enterInterview">我已保存，開始訪談</button></section>
-<section id="interview" class="hidden layout"><aside class="card status"><span class="eyebrow">訪談進度</span><div class="ring"><b id="turn">0</b><small>/ 最多 66 題</small></div><div id="dims"></div><p class="fine">回答會自動保存在你的訪問碼中。資訊充分後，訪談會自然結束。</p></aside><article class="card chat"><div id="observation" class="observation"></div><h2 id="question">正在準備第一個問題…</h2><textarea id="answer" rows="7" placeholder="寫下你會怎麼做、為什麼，以及什麼情況下你會改變……"></textarea><div class="actions"><span id="hint">不必組織成標準答案 · Ctrl + Enter 提交</span><button id="send">提交回答</button></div></article><figure class="interview-cast"><img src="/bigfive-guides-v2.png" alt="五大人格角色合照"><figcaption>五位角色會隨著訪談逐步清晰，但你的結果不會被塞進固定類型。</figcaption></figure></section>
-<section id="report" class="hidden"><div class="card persona"><div class="persona-copy"><span class="eyebrow">目前最突出的維度</span><h1 id="personaTitle"></h1><h2 id="personaTagline"></h2><p id="personaIntro"></p></div><div id="topCharacter" class="top-character" role="img" aria-label="最高傾向維度角色"></div></div><div class="card report-head"><span class="eyebrow">訪談摘要</span><h1 id="summary"></h1><p class="fine">傾向指數只用於本次訪談內的相對比較，不是常模百分位，也不將你歸入固定類型。</p></div><div class="guides-title"><div><span class="eyebrow">由高至低</span><h2>五個人格維度</h2></div><p>每一維都是連續區間，會隨情境和人生階段發生變化。</p></div><div id="dimensionCards" class="dimension-grid"></div><div id="reportDetails" class="detail-grid"></div></section>
-</main><div id="toast"></div><link rel="stylesheet" href="/report.css"><link rel="stylesheet" href="/gate.css"><link rel="stylesheet" href="/theme-v2.css"><link rel="stylesheet" href="/theme-v3.css"><script src="/app.js"></script></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>五大人格反饋計畫</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<main class="shell">
+  <header><div class="brand"><span class="mark" aria-label="五大人格反饋計畫標誌">五</span><div><b>五大人格反饋計畫</b><small>BIG FIVE FEEDBACK PROJECT</small></div></div><span id="slots" class="slot-pill">讀取今日名額…</span></header>
+  <section id="gate" class="card hero"><span class="eyebrow">BIG FIVE FEEDBACK PROJECT</span><h1>從一次認真對話開始，<br>慢慢看清自己的穩定傾向。</h1><p>這裡沒有標準答案。你可以說說自己會怎麼做、為什麼，以及什麼情況下會改變。每天開放 10 個新訪談名額。</p><div class="claim-row"><button id="claim">領取今日名額</button><span>無需註冊 · 專屬訪問碼可長期查看結果</span></div><details><summary>已經有訪問碼？</summary><div class="code-row"><input id="code" placeholder="輸入你的訪問碼" autocomplete="off"><button id="login">繼續訪談或查看報告</button></div></details><p class="fine">本計畫基於 Big Five 理論開展半結構化訪談，不是標準化心理量表或臨床診斷。</p></section>
+  <section class="group-intro"><div><span class="eyebrow">五個維度，一個完整的人</span><h2>認識陪你完成訪談的五位角色</h2><p>他們分別代表開放性、盡責性、外向性、宜人性與情緒敏感性。每一種傾向都有它的能力，也有需要留意的邊界。</p></div><img src="./bigfive-guides-v2.png" alt="五大人格角色合照"></section>
+  <section id="codeReveal" class="hidden card code-reveal"><span class="eyebrow">這是你的專屬訪問碼</span><h2 id="issuedCode"></h2><p>請現在保存。以後換設備、清理瀏覽器或回來查看報告時，都使用這個碼。</p><button id="enterInterview">我已保存，開始訪談</button></section>
+  <section id="interview" class="hidden layout"><aside class="card status"><span class="eyebrow">訪談進度</span><div class="ring"><b id="turn">0</b><small>/ 最多 66 題</small></div><div id="dims"></div><p class="fine">回答會自動保存在你的訪問碼中。資訊充分後，訪談會自然結束。</p></aside><article class="card chat"><div id="observation" class="observation"></div><h2 id="question">正在準備第一個問題…</h2><textarea id="answer" rows="7" placeholder="寫下你會怎麼做、為什麼，以及什麼情況下你會改變……"></textarea><div class="actions"><span id="hint">不必組織成標準答案 · Ctrl + Enter 提交</span><button id="send">提交回答</button></div></article><figure class="interview-cast"><img src="./bigfive-guides-v2.png" alt="五大人格角色合照"><figcaption>五位角色會隨著訪談逐步清晰，但你的結果不會被塞進固定類型。</figcaption></figure></section>
+  <section id="report" class="hidden"><div class="card persona"><div class="persona-copy"><span class="eyebrow">目前最突出的維度</span><h1 id="personaTitle"></h1><h2 id="personaTagline"></h2><p id="personaIntro"></p></div><div id="topCharacter" class="top-character" role="img" aria-label="最高傾向維度角色"></div></div><div class="card report-head"><span class="eyebrow">訪談摘要</span><h1 id="summary"></h1><p class="fine">傾向指數只用於本次訪談內的相對比較，不是常模百分位，也不將你歸入固定類型。</p></div><div class="guides-title"><div><span class="eyebrow">由高至低</span><h2>五個人格維度</h2></div><p>每一維都是連續區間，會隨情境和人生階段發生變化。</p></div><div id="dimensionCards" class="dimension-grid"></div><div id="reportDetails" class="detail-grid"></div></section>
+</main>
+<div id="toast"></div>
+<link rel="stylesheet" href="./report.css"><link rel="stylesheet" href="./gate.css"><link rel="stylesheet" href="./theme-v2.css"><link rel="stylesheet" href="./theme-v3.css">
+<script src="./runtime-config.js"></script><script src="./app.js"></script>
+</body>
+</html>
