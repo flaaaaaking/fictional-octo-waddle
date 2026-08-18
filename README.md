@@ -1,73 +1,39 @@
-# 五大人格访谈计划
+# 五大人格反饋計畫
 
-一个无需前端框架即可运行的中文单页应用。默认使用 mock provider，包含一次性访问码、服务端会话、每日签发上限与每会话题数上限。
+有些理解，不需要急著被歸類。
 
-## 网页完整版本
+**五大人格反饋計畫**是一場由你主導、循序展開的開放式訪談：從真實的選擇、習慣、關係與矛盾中，一點點拼出你如何感受、思考與行動。它不把人塞進固定選項，也不急著替你下定義。
 
-这个仓库提交的是完整版本，不是静态展示稿：网页界面、每日名额、访问码、结果回看和服务端 DeepSeek 调用都包含在内。
+它的靈感來自人格心理學中被廣泛研究的 **Big Five（五大人格）框架**：外向性、盡責性、開放性、宜人性與情緒穩定性。相較於傳統勾選題，這裡更在意你回答中的條件、脈絡與例外——因為人從來不只是一個分數。
 
-GitHub 负责保存和更新代码；真正公开打开的网页需要部署成一个 Node 网站。原因是访问码和 DeepSeek Key 必须由服务端保存，不能放进任何可被浏览器下载的 HTML / JavaScript 文件。
+## 你會得到什麼
 
-推荐做法：在 [Render](https://render.com/) 用 GitHub 登录，选择 **New + → Blueprint**，选择本仓库。平台会自动读取 `render.yaml` 并建立完整网页服务。首次部署可先保持 `AI_PROVIDER=mock`，确认页面无误后，再到 Render 的环境变量中填写 `DEEPSEEK_API_KEY` 并把 `AI_PROVIDER` 改为 `deepseek`。这些设置不会被写回 GitHub，也不会显示给访客。
+- 一題一答、可自然延伸的訪談，而不是數字量表
+- 五個人格維度與子特質的細緻解讀
+- 你比較穩定的行為模式，以及看似矛盾但其實有跡可循的部分
+- 你擅長的地方、容易忽略的盲區，以及本次解讀的可信度說明
+- 一份可以用自己的專屬訪問碼長期回看的結果
 
-部署完成后，Render 会给出一个 `https://...onrender.com` 网页地址；把那个地址分享给访客即可。访客只会看到网页和自己的访问码，无法看到 API Key。
+整個過程最多 66 題；當資訊已經足夠，訪談會自然收束。每天開放 10 個新的訪談名額，讓每一份回饋都保有應有的耐心與篇幅。
 
-> GitHub Pages 只能托管静态 HTML，不能安全保存 API Key，也无法可靠保存每日十个名额及访问码。因此它不适合本项目的完整版本。
+> 這是一種基於 Big Five 的半結構化開放式訪談，不是標準化心理量表，也不能作為臨床診斷或正式百分位解讀。
 
-## 本地运行
+## 關於隱私與使用
 
-1. 安装 Node.js 20 或更高版本。
-2. 复制 `.env.example` 为 `.env`。
-3. 运行 `npm run secrets`，从三个随机密钥中任选一个，并把生成的 `SESSION_SECRET` 填入 `.env`。
-4. 运行 `npm start`。
-5. 打开 `http://localhost:3000`。每天前 10 位新用户可自动领取专属访问码。
+訪客只會使用自己的專屬訪問碼；網站不會把 DeepSeek API Key 交給瀏覽器，也不會讓其他人透過網頁看到它。訪問碼與結果由服務端保存，以便日後回看。
 
-项目不依赖第三方 npm 包，因此无需 `npm install`。
+本專案完整保留了公開網站所需的訪談、每日名額、訪問碼、結果回看與服務端 AI 介面。GitHub 是程式碼的家；實際分享的網站會部署為安全的網頁服務。
 
-## 访问码与费用保护
+## 支持作者
 
-- 不需要管理员生成密码；默认每天最多 10 位新用户，以 Asia/Singapore 日期为准。
-- 用户点击领取名额时自动获得专属码；访问码只保存 SHA-256 摘要，明文只在领取时显示。
-- 同一个码可反复登录，但只对应同一个访谈和报告，不会创建新的免费会话；默认可回看十年。
-- 登录后使用 HttpOnly 会话 Cookie，浏览器脚本无法读取会话凭证。
-- 每个会话最多 66 个访谈回合；信息充分时会提前结束。可在 `.env` 调低 `MAX_TURNS_PER_SESSION`。
-- `data/store.json` 保存签发记录和访谈上下文，已被 `.gitignore` 排除。
+如果這場訪談有讓你更靠近自己一點，歡迎請作者喝杯咖啡。每一份支持，都會用在讓這個小計畫更細緻、更長久地陪伴下一個人。
 
-这能控制普通分享场景下的滥用，但公开部署时仍建议在反向代理或云平台增加 IP 速率限制和总预算告警。
+| 支付寶 | 微信支付 |
+| :---: | :---: |
+| <img src="public/support-alipay.jpg" alt="支付寶支持作者收款碼" width="260"> | <img src="public/support-wechat.jpg" alt="微信支付支持作者收款碼" width="260"> |
 
-## 接入 DeepSeek API
+謝謝你的支持，也祝你在理解自己的路上，始終保有一點好奇與溫柔。
 
-服务端接口层位于 `server/provider.js`，使用 DeepSeek 官方 OpenAI 兼容的 `/chat/completions` 接口：
+---
 
-```env
-AI_PROVIDER=deepseek
-DEEPSEEK_API_BASE_URL=https://api.deepseek.com
-DEEPSEEK_API_KEY=你的密钥
-DEEPSEEK_MODEL=deepseek-v4-flash
-```
-
-真实 Key 绝不能写进 `public/` 目录或前端环境变量。若希望提高报告质量，可以把模型改成 `deepseek-v4-pro`，但成本会更高。
-
-## 目录
-
-```text
-bigfive-interview/
-├─ public/              # 单页界面
-│  ├─ index.html
-│  ├─ styles.css
-│  └─ app.js
-├─ server/
-│  ├─ index.js          # HTTP、认证与会话 API
-│  ├─ provider.js       # mock / DeepSeek 接口层
-│  ├─ prompt.js         # Big Five 判定、追问、停止、报告结构
-│  └─ store.js          # 一次性访问码及本地持久化
-├─ scripts/
-│  └─ generate-secrets.js
-├─ data/                # 运行数据，不提交 GitHub
-├─ .env.example
-└─ package.json
-```
-
-## 部署与数据保存
-
-当前 `data/store.json` 适合个人小流量、单个网站实例。Render 的完整部署请为服务挂载持久化磁盘到 `/opt/render/project/src/data`，这样访问码和结果会在重启后保留。若未来访问量提高或需要多实例，再把 `server/store.js` 换成 Redis / Postgres，并使用原子操作兑换访问码，防止并发重复消费。
+此專案以 Big Five 人格理論作為訪談骨架；它尊重複雜性，不把任何一種人格傾向當成好或壞。
