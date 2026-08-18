@@ -18,7 +18,7 @@ async function next(answer=''){try{$('#send').disabled=true;const d=await api('/
 const chips=items=>(items||[]).map(x=>`<span>${esc(typeof x==='string'?x:x.name||x.level)}</span>`).join('');
 function renderDimension(d,i){const t=traits[d.key]||{guide:d.name,tagline:'',color:'#607080',image:''};return `<article class="dimension-card" style="--dimension-color:${t.color}">
   <div class="dimension-character"><img src="${t.image}" alt="${esc(t.guide)}角色立繪"><span>0${i+1}</span></div>
-  <div class="dimension-heading"><small>${esc(d.name)} · ${esc(d.level)}</small><h3>${esc(t.guide)}</h3><p>${esc(t.tagline)}</p><div class="range"><b>${esc(d.range||'區間待補充')}</b><span>本次訪談內估計 · 非百分位</span></div></div>
+  <div class="dimension-heading"><small>${esc(d.name)} · ${esc(d.level)}</small><h3>${esc(t.guide)}</h3><p>${esc(t.tagline)}</p><div class="range"><b>${Number.isFinite(Number(d.score))?`${esc(d.score)} / 100`:esc(d.range||'區間待補充')}</b><span>${d.range?`估計區間 ${esc(d.range)} · `:''}訪談傾向指數，非百分位</span></div></div>
   <div class="dimension-body"><p class="dimension-intro">${esc(d.introduction)}</p><p>${esc(d.judgment)}</p>
     <div class="facet-grid">${(d.facets||[]).map(f=>`<div><b>${esc(f.name)}</b><em>${esc(f.level)}</em><p>${esc(f.explanation)}</p></div>`).join('')}</div>
     <h4>判斷依據</h4><div class="evidence-list">${(d.evidence||[]).map(e=>`<div><b>${esc(e.context)}</b><p>${esc(e.behavior)}</p><small>${esc(e.meaning)}${e.condition?` · 條件：${esc(e.condition)}`:''}</small></div>`).join('')||'<p>目前證據仍不足。</p>'}</div>
@@ -27,7 +27,7 @@ function renderDimension(d,i){const t=traits[d.key]||{guide:d.name,tagline:'',co
     <small class="confidence">證據可信度 ${esc(d.confidence)}%</small>
   </div></article>`}
 function insightCards(title,items,render){return `<section class="insight-section"><div class="section-title"><span></span><h2>${title}</h2></div><div class="insight-grid">${(items||[]).map(render).join('')||'<p>目前沒有足夠資訊。</p>'}</div></section>`}
-function renderReport(r){show('report');const sorted=[...(r.dimensions||[])].sort((a,b)=>parseInt(b.range||b.score||0)-parseInt(a.range||a.score||0));const p=r.persona||{};$('#personaTitle').textContent=p.title||'你的五維輪廓';$('#personaTagline').textContent=p.tagline||'五個維度，共同寫成一個人。';$('#personaIntro').textContent=p.introduction||r.summary;$('#personaCharacter').src=(traits[sorted[0]?.key]||traits.openness).image;$('#summary').textContent=r.summary;$('#dimensionCards').innerHTML=sorted.map(renderDimension).join('');
+function renderReport(r){show('report');const rank=x=>Number.isFinite(Number(x.score))?Number(x.score):parseInt(x.range||0);const sorted=[...(r.dimensions||[])].sort((a,b)=>rank(b)-rank(a));const p=r.persona||{};$('#personaTitle').textContent=p.title||'你的五維輪廓';$('#personaTagline').textContent=p.tagline||'五個維度，共同寫成一個人。';$('#personaIntro').textContent=p.introduction||r.summary;$('#personaCharacter').src=(traits[sorted[0]?.key]||traits.openness).image;$('#summary').textContent=r.summary;$('#dimensionCards').innerHTML=sorted.map(renderDimension).join('');
   const stable=insightCards('穩定模式',r.stablePatterns,x=>`<article><h3>${esc(x.pattern||x)}</h3><p>${esc(x.evidence)}</p><small>${esc(x.when)}</small></article>`);
   const contradictions=insightCards('表面矛盾',r.apparentContradictions,x=>`<article><h3>${esc(x.pattern)}</h3><p>${esc(x.explanation)}</p><small>切換條件：${esc(x.trigger)}</small></article>`);
   const strengths=insightCards('優勢與代價',r.strengths,x=>`<article><h3>${esc(x.strength||x)}</h3><p>${esc(x.bestContext)}</p><small>過度使用：${esc(x.cost)}</small></article>`);
