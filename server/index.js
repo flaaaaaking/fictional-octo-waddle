@@ -39,13 +39,13 @@ function rateLimit(req, res, group, max, windowMs) {
 const body = req => new Promise((resolve, reject) => { let s = ''; req.on('data', c => { s += c; if (Buffer.byteLength(s, 'utf8') > 12000) { reject(new Error('too-large')); req.destroy(); } }); req.on('end', () => { try { resolve(JSON.parse(s || '{}')); } catch { reject(new Error('invalid-json')); } }); });
 const cookies = req => Object.fromEntries((req.headers.cookie || '').split(';').filter(Boolean).map(x => x.trim().split('=').map(decodeURIComponent)));
 const sign = id => `${id}.${crypto.createHmac('sha256', process.env.SESSION_SECRET || 'dev-only-change-me').update(id).digest('base64url')}`;
-function sessionId(req) { const token = cookies(req).bf_session || '', [id, sig] = token.split('.'); if (!id || !sig) return null; const expected = sign(id).split('.')[1]; try { return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)) ? id : null; } catch { return null; } }
+function sessionId(req) { const code = String(req.headers['x-access-code'] || '').trim(); if (code) return loginWithCode(code, ttl); const token = cookies(req).bf_session || '', [id, sig] = token.split('.'); if (!id || !sig) return null; const expected = sign(id).split('.')[1]; try { return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)) ? id : null; } catch { return null; } }
 function setSession(res, id) { res.setHeader('set-cookie', `bf_session=${encodeURIComponent(sign(id))}; HttpOnly; SameSite=None; Path=/; Max-Age=${ttl * 3600}${production ? '; Secure' : ''}`); }
 
 const server = http.createServer(async (req, res) => {
   try {
     if (!allowedOrigin(req, res)) return;
-    if (req.method === 'OPTIONS') { res.writeHead(204, { 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '86400' }); return res.end(); }
+    if (req.method === 'OPTIONS') { res.writeHead(204, { 'access-control-allow-methods': 'GET,POST,OPTIONS', 'access-control-allow-headers': 'content-type,x-access-code', 'access-control-max-age': '86400' }); return res.end(); }
     if (req.url.startsWith('/api/') && !rateLimit(req, res, 'api', 120, 15 * 60 * 1000)) return;
     if (req.method === 'GET' && req.url === '/api/access/availability') return json(res, 200, availability(limit));
     if (req.method === 'POST' && req.url === '/api/access/claim') { if (!rateLimit(req, res, 'claim', 8, 24 * 60 * 60 * 1000)) return; const issued = claimDailySlot(limit, ttl); setSession(res, issued.sessionId); return json(res, 200, { code: issued.code, remaining: issued.remaining }); }
