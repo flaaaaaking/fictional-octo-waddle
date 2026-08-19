@@ -13,7 +13,7 @@ if (-not $ConsumeSlot) {
   exit 0
 }
 
-$claim = Invoke-RestMethod -Method Post -Uri "$BaseUrl/api/access/claim" -ContentType 'application/json' -Body '{}'
+$claim = Invoke-RestMethod -Method Post -Uri "$BaseUrl/api/access/claim" -ContentType 'application/json' -Body '{"serviceConsent":true,"researchConsent":false}'
 $code = $claim.code
 $experimentId = 'EXP-{0}-{1}' -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $code.Split('-')[0]
 $headers = @{ 'x-access-code' = $code }
@@ -40,6 +40,10 @@ foreach ($answer in $answers) {
 if ($result.type -ne 'report') { throw "预期生成 report，实际得到 $($result.type)" }
 $restore = Invoke-RestMethod -Uri "$BaseUrl/api/session" -Headers $headers
 $facetCount = ($result.report.dimensions | ForEach-Object { $_.facets.Count } | Measure-Object -Sum).Sum
+if ($facetCount -ne 15) { throw "预期 15 个子特质，实际 $facetCount" }
+if (-not $result.report.methodology.version) { throw '报告缺少专业判定方法版本' }
+if (-not $result.report.confidence.components) { throw '报告缺少可信度分项' }
+if (-not $result.report.evidenceAppendix) { throw '报告缺少可追溯证据索引' }
 
 Write-Output "实验编号：$experimentId"
 Write-Output "实验代码／访问码：$code"

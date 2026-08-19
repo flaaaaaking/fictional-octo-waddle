@@ -49,7 +49,7 @@ function loginWithCode(code, ttlHours) {
   save(db); return access.sessionId;
 }
 function getSession(id) { const db = load(), s = db.sessions[id]; return s && s.expiresAt > Date.now() ? s : null; }
-function updateSession(id, fn) { const db = load(); if (!db.sessions[id]) return null; fn(db.sessions[id]); save(db); return db.sessions[id]; }
+function updateSession(id, fn) { const db = load(); if (!db.sessions[id]) return null; fn(db.sessions[id]); db.sessions[id].updatedAt = Date.now(); save(db); return db.sessions[id]; }
 function updateConsent(id, researchConsent) {
   return updateSession(id, session => {
     session.consent = {
