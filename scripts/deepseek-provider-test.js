@@ -40,6 +40,6 @@ function transcript(answers) {
     provider: process.env.AI_PROVIDER,
     model: process.env.DEEPSEEK_MODEL,
     dynamicQuestions: reportOnly ? '本次跳过，已由上一轮验证' : {reserved: reserved.question, outgoing: outgoing.question, different: reserved.question !== outgoing.question},
-    report: {type: final.type, dimensions: report.dimensions?.length, facets: facets.length, ranked: facets.every((x,i)=>i===0||facets[i-1].score>=x.score), growthPlans: report.growthPlan?.length, learningAndWorkFields: Object.keys(report.learningAndWorkStyle||{}).length, summaryChars: report.summary?.length, confidence: report.confidence?.score, hasMissingInfoList: Boolean(report.confidence?.gaps), title: report.persona?.title}
+    report: {type: final.type, dimensions: report.dimensions?.length, facets: facets.length, ranked: facets.every((x,i)=>i===0||facets[i-1].score>=x.score), growthPlans: report.growthPlan?.length, learningAndWorkFields: Object.keys(report.learningAndWorkStyle||{}).length, summaryChars: report.summary?.length, confidence: report.confidence?.score, confidenceComponents: report.confidence?.components, evidenceCount: report.evidenceAppendix?.length, method: report.methodology?.version, hasMissingInfoList: Boolean(report.confidence?.gaps), title: report.persona?.title}
   }, null, 2));
 })().catch(error => { console.error(error.message); process.exitCode = 1; });
