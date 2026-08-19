@@ -59,16 +59,18 @@ function normalizeResult(result) {
     .sort((a, b) => b.score - a.score)
     .map((facet, index) => ({...facet, rank: index + 1}));
   if (!report.growthPlan?.length) report.growthPlan = (report.blindSpots || []).map(item => ({
-    title: item.blindSpot,
-    why: item.signal,
-    microAction: item.suggestion,
-    ifThen: `如果再次出现“${item.signal}”，那么先暂停并完成上述最小行动。`,
+    title: item.blindSpot || '值得继续观察的习惯',
+    why: item.signal || '旧版报告没有保存完整预警信号，建议只把它当作观察方向。',
+    microAction: item.suggestion || '下次遇到相似情境时，记录发生了什么、你做了什么，以及结果如何。',
+    ifThen: `如果再次注意到这个模式，那么先暂停一分钟，再选择一个可逆的小行动。`,
     weeklyReview: '每周记录一次发生情境、采取的动作和实际结果。',
     guardrail: '目标是增加选择空间，不是否定或消除原有倾向。'
   }));
   for (const dimension of report.dimensions || []) {
     if (report.growthPlan.length >= 3) break;
-    report.growthPlan.push({title:`调节${dimension.name}的使用方式`,why:dimension.watchout,microAction:`下次出现相关情境时，先记录触发条件，再选择一个比平时幅度小 10% 的新行动。`,ifThen:`如果注意到“${dimension.watchout}”，那么先停一分钟，确认此刻需要的是坚持还是切换策略。`,weeklyReview:'每周回看一次触发情境、实际选择与结果，不用感受好坏代替行为证据。',guardrail:`保留“${dimension.strengthExpression}”这项功能，只调整它被过度使用的时机。`});
+    const watchout = dimension.watchout || '这种倾向在不合适的情境中被过度使用';
+    const strength = dimension.strengthExpression || '这种倾向在合适情境中的原有功能';
+    report.growthPlan.push({title:`调节${dimension.name}的使用方式`,why:watchout,microAction:`下次出现相关情境时，先记录触发条件，再选择一个比平时幅度小 10% 的新行动。`,ifThen:`如果注意到相关模式，那么先停一分钟，确认此刻需要的是坚持还是切换策略。`,weeklyReview:'每周回看一次触发情境、实际选择与结果，不用感受好坏代替行为证据。',guardrail:`保留“${strength}”，只调整它被过度使用的时机。`});
   }
   if (!report.learningAndWorkStyle) {
     const strongest = [...(report.dimensions || [])].sort((a,b) => b.score - a.score)[0];
